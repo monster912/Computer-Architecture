@@ -59,7 +59,32 @@ matrixMul_shemm( float* C, float* A, float* B, int wA, int wB)
 {
 	// TODO: fill me
 
+
+__shared__ float ds_A[BLOCK_SIZE][BLOCK_SIZE];
+__shared__ float ds_B[BLOCK_SIZE][BLOCK_SIZE];
+
+int bx = blockIdx.x; int by = blockIdx.y;
+int tx = threadIdx.x; int ty = threadIdx.y;
+
+int Row = by*blockDim.y + ty;
+int Col = bx*blockDim.x + tx;
+float Cvalue = 0;
+
+for (int p = 0 ;p<wA/BLOCK_SIZE; ++p)
+ {
+	ds_A[ty][tx] = A[Row*wA+p*BLOCK_SIZE+tx];
+	ds_B[ty][tx] = B[(p*BLOCK_SIZE+ty)*wB+Col];
+	__syncthreads();
+
+  for (int i = 0;i<BLOCK_SIZE;++i) Cvalue +=ds_A[ty][i]*ds_B[i][tx];
+    __syncthreads();
+  
+ }
+   C[Row*wB+Col]=Cvalue;
+ 
 }
+
+
 
 void constantInit(float *data, int size, float val)
 {

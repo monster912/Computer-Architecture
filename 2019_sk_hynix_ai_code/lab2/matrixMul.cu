@@ -57,10 +57,21 @@ matrixMulCPU(float *C, const float *A, const float *B, unsigned int hA, unsigned
 __global__ void
 matrixMul_naive( float* C, float* A, float* B, int wA, int wB)
 {
-  //TODO
+int Row = blockIdx.y*blockDim.y+threadIdx.y;
+int Col = blockIdx.x*blockDim.x+threadIdx.x;
 
+if ((Row < wA) && (Col<wB))
+  {
+	float Cvalue=0;
+	for (int k = 0 ; k < wA; ++k) Cvalue += A[Row*wA+k]*B[k*wB+Col];
+	C[Row*wB+Col]=Cvalue; 
+ }
 
 }
+
+
+
+
 
 void constantInit(float *data, int size, float val)
 {

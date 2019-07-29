@@ -32,6 +32,9 @@ int main(void)
 	float *d_B = NULL;
 	float *d_C = NULL;
   //TODO: cudaMalloc for d_A, d_B, d_C
+	cudaMalloc(&d_A,size);
+	cudaMalloc(&d_B,size);
+	cudaMalloc(&d_C,size);
 
 	//init vector A and vector B
 	for(int j=0;j < n; j++){
@@ -42,6 +45,8 @@ int main(void)
 	// copy host data to device
 	printf("Copy input vectors to device\n");
   //TODO: cudaMemcpy h_A -> d_A, h_B -> d_B
+	cudaMemcpy(d_A,h_A,size,cudaMemcpyHostToDevice);
+	cudaMemcpy(d_B,h_B,size,cudaMemcpyHostToDevice);
 
 
 	//Launch the Vector Add CUDA Kernel
@@ -60,6 +65,7 @@ int main(void)
 	//Copy device output data to host
 	printf("Copy output data to host\n");
   //TODO: cudaMemcpy d_C -> h_C
+	cudaMemcpy(h_C,d_C,size,cudaMemcpyDeviceToHost);
 
 	//Verifiy output
 	int pass = 0;
@@ -82,6 +88,9 @@ int main(void)
 
 	//free device memory
   //TODO: cudaFree for d_A, d_B, d_C
+	cudaFree(d_A);
+	cudaFree(d_B);
+	cudaFree(d_C);
 
 	//free host memory
 	free(h_A);
